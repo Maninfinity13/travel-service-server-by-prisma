@@ -3,20 +3,51 @@ const multer = require("multer"); //จัดการการอัปโห�
 const path = require("path"); //จัดการ path หรือตำแหน่งที่อยู่ของไฟล์
 const fs = require("fs"); //จัดการไฟล์
 
+//ใช้งาน Cloudinary
+const { v2: cloudinary } = require("cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 //ใช้ Prisma ในการทำงานกับฐานข้อมูล CRUD
 const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
 
+
+// Configuration
+cloudinary.config({ 
+    cloud_name: 'dh6erziqy', 
+    api_key: '369138945583319', 
+    api_secret: 'ieSxjSt41rXWC-ChafTyC7EI_c0' // Click 'View API Keys' above to copy your API secret
+});
+
+
 //ฟังก์ชันเพื่อการอัปโหลดไฟล์--------------------------
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "images/traveller");
-    } ,
-    filename: (req, file, cb) => {
-        cb(null, 'traveller_'+ Math.floor(Math.random()* Date.now()) + path.extname(file.originalname));
-    }
- })
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, "images/traveller");
+//     } ,
+//     filename: (req, file, cb) => {
+//         cb(null, 'traveller_'+ Math.floor(Math.random()* Date.now()) + path.extname(file.originalname));
+//     }
+//  })
  
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+        //ชื่อไฟล์
+        const newFile = 'traveller_'+ Math.floor(Math.random()* Date.now());
+
+        return{
+            folder: 'images/treaveller',
+            allowed_formats: ['jpg', 'png', 'jpeg'],
+            public_id: newFile
+        }
+        
+    }
+
+})
+
+
+
  exports.uploadTraveller = multer({
      storage: storage,
      limits: {

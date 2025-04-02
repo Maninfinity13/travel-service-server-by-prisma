@@ -7,15 +7,24 @@ const fs = require("fs"); //จัดการไฟล์
 const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
 
+const { v2: cloudinary } = require("cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 //ฟังก์ชันเพื่อการอัปโหลดไฟล์--------------------------
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "images/travel");
-    },
-    filename: (req, file, cb) => {
-        cb(null, 'travel_' + Math.floor(Math.random() * Date.now()) + path.extname(file.originalname));
-    }
-})
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, "images/travel");
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, 'travel_' + Math.floor(Math.random() * Date.now()) + path.extname(file.originalname));
+//     }
+// })
+
+cloudinary.config({ 
+    cloud_name: 'dh6erziqy', 
+    api_key: '369138945583319', 
+    api_secret: 'ieSxjSt41rXWC-ChafTyC7EI_c0' // Click 'View API Keys' above to copy your API secret
+});
+
 
 exports.uploadTravel = multer({
     storage: storage,
